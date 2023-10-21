@@ -7,7 +7,6 @@ import java.util.Set;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -22,19 +21,13 @@ public class CustomCTMLogic implements ICTMLogic {
     public final int[][] lookups;
     private final OutputFace[] tiles;
     private final LocalDirection[] directions;
-    private ConnectionCheck connectionCheck = new ConnectionCheck();
+    private final ConnectionCheck connectionCheck;
     
     private class Cache implements ILogicCache {
-
-        @Nullable
-        private final ConnectionCheck connectionCheckOverride;
+        
         private int[] cachedSubmapIds;
         private OutputFace[] cachedSubmaps;
-
-        public Cache(@Nullable ConnectionCheck connectionCheck) {
-            this.connectionCheckOverride = connectionCheck;
-        }
-
+        
         @Override
         public OutputFace[] getCachedSubmaps() {
             return this.cachedSubmaps;
@@ -56,13 +49,8 @@ public class CustomCTMLogic implements ICTMLogic {
 
         @Override
         public void buildConnectionMap(BlockGetter world, BlockPos pos, Direction side) {
-            ConnectionCheck oldConnectionCheck = connectionCheck;
-            if (connectionCheckOverride != null) {
-                connectionCheck = connectionCheckOverride;
-            }
             this.cachedSubmapIds = CustomCTMLogic.this.getSubmapIds(world, pos, side);
             this.cachedSubmaps = CustomCTMLogic.this.getSubmaps(world, pos, side);
-            connectionCheck = oldConnectionCheck;
         }
     }
 
@@ -76,7 +64,8 @@ public class CustomCTMLogic implements ICTMLogic {
         if (key >= lookups.length || lookups[key] == null) {
             throw new IllegalStateException("Input state found that is not in lookup table: " + Integer.toBinaryString(key));
         }
-        return lookups[key];
+        int[] tileIds = lookups[key];
+        return tileIds;
     }
 
     @Override
@@ -90,8 +79,8 @@ public class CustomCTMLogic implements ICTMLogic {
     }
     
     @Override
-    public ILogicCache cached(@Nullable ConnectionCheck connectionCheck) {
-        return this.new Cache(connectionCheck);
+    public ILogicCache cached() {
+        return this.new Cache();
     }
     
     private List<ISubmap> outputSubmapCache;
@@ -106,12 +95,7 @@ public class CustomCTMLogic implements ICTMLogic {
         }
         return outputSubmapCache;
     }
-
-    @Override
-    public ISubmap getFallbackUvs() {
-        return tiles.length == 0 ? ICTMLogic.super.getFallbackUvs() : tiles[0].getUvs();
-    }
-
+    
     private int textureCountCache = -1;
     @Override
     public int requiredTextures() {

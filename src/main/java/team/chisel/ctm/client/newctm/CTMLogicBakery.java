@@ -3,7 +3,6 @@ package team.chisel.ctm.client.newctm;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.IntFunction;
@@ -184,12 +183,12 @@ public class CTMLogicBakery {
                 }
             }
         }
-        return new CustomCTMLogic(lookups, asSortedArray(outputs, OutputFace[]::new), asSortedArray(bitmap, LocalDirection[]::new));
+        return new CustomCTMLogic(lookups, asSortedArray(outputs, OutputFace[]::new), asSortedArray(bitmap, LocalDirection[]::new), new ConnectionCheck());
     }
     
     private <T> T[] asSortedArray(Int2ObjectMap<T> indexedMap, IntFunction<T[]> ctor) {
         return indexedMap.int2ObjectEntrySet().stream()
-            .sorted(Comparator.comparingInt(Int2ObjectMap.Entry::getIntKey))
+            .sorted((e1, e2) -> Integer.compare(e1.getIntKey(), e2.getIntKey()))
             .map(Entry::getValue)
             .toArray(ctor);
     }

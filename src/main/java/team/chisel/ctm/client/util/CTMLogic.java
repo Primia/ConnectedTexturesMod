@@ -322,7 +322,7 @@ public class CTMLogic implements ICTMLogic, ILogicCache {
     
     @Override
     @Deprecated
-    public ILogicCache cached(@Nullable ConnectionCheck connectionCheck) {
+    public ILogicCache cached() {
         return this;
     }
     

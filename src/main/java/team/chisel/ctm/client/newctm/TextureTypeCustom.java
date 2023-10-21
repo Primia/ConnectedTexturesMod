@@ -45,8 +45,4 @@ public class TextureTypeCustom implements ITextureType {
     public TextureCustomCTM<? extends TextureTypeCustom> makeTexture(TextureInfo info) {
         return new TextureCustomCTM<>(this, info);
     }
-
-    public ISubmap getFallbackUvs() {
-        return logic.getFallbackUvs();
-    }
 }
