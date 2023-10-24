@@ -207,12 +207,11 @@ public class CTMLogic implements ICTMLogic, ILogicCache {
      */
     @Override
     public void buildConnectionMap(BlockGetter world, BlockPos pos, Direction side) {
-        BlockState state = connectionCheck.getConnectionState(world, pos, side, pos);
         // TODO this naive check doesn't work for models that have unculled faces.
         // Perhaps a smarter optimization could be done eventually?
 //        if (state.shouldSideBeRendered(world, pos, side)) {
             for (Dir dir : Dir.VALUES) {
-                setConnectedState(dir, dir.isConnected(connectionCheck, world, pos, side, state));
+                setConnectedState ( dir , dir.isConnected ( connectionCheck , world , pos , side ) ) ;
             }
 //        }
     }
