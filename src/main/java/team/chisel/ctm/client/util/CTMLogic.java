@@ -18,7 +18,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.experimental.Accessors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import team.chisel.ctm.api.texture.ISubmap;
 import team.chisel.ctm.client.newctm.CTMLogicBakery.OutputFace;
@@ -149,7 +149,7 @@ public class CTMLogic implements ICTMLogic, ILogicCache {
 	 *         Indeces are in counter-clockwise order starting at bottom left.
 	 */
 	@Override
-    public int[] getSubmapIds(@Nullable BlockGetter world, BlockPos pos, Direction side) {
+    public int[] getSubmapIds(@Nullable BlockAndTintGetter world, BlockPos pos, Direction side) {
 		if (world == null) {
             return submapCache;
         }
@@ -206,12 +206,13 @@ public class CTMLogic implements ICTMLogic, ILogicCache {
      * Builds the connection map and stores it in this CTM instance. The {@link #connected(Dir)}, {@link #connectedAnd(Dir...)}, and {@link #connectedOr(Dir...)} methods can be used to access it.
      */
     @Override
-    public void buildConnectionMap(BlockGetter world, BlockPos pos, Direction side) {
+    public void buildConnectionMap(BlockAndTintGetter world, BlockPos pos, Direction side) {
+        BlockState state = connectionCheck.getConnectionState(world, pos, side, pos);
         // TODO this naive check doesn't work for models that have unculled faces.
         // Perhaps a smarter optimization could be done eventually?
 //        if (state.shouldSideBeRendered(world, pos, side)) {
             for (Dir dir : Dir.VALUES) {
-                setConnectedState ( dir , dir.isConnected ( connectionCheck , world , pos , side ) ) ;
+                setConnectedState(dir, dir.isConnected(connectionCheck, world, pos, side, state));
             }
 //        }
     }
@@ -315,13 +316,13 @@ public class CTMLogic implements ICTMLogic, ILogicCache {
 
     @Override
     @Deprecated
-    public OutputFace[] getSubmaps(BlockGetter world, BlockPos pos, Direction side) {
+    public OutputFace[] getSubmaps(BlockAndTintGetter world, BlockPos pos, Direction side) {
         return new OutputFace[0];
     }
     
     @Override
     @Deprecated
-    public ILogicCache cached(@Nullable ConnectionCheck connectionCheck) {
+    public ILogicCache cached() {
         return this;
     }
     
