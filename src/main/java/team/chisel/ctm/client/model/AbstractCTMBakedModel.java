@@ -282,8 +282,7 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<BakedModel
         //Add any extra model data the parent model may be expecting or want to add
         tileData = super.getModelData(world, pos, state, tileData);
     	if (!tileData.has(CTM_CONTEXT)) {
-    		//Ensure the position is immutable in case another mod persists the model data longer than the position
-    		tileData = tileData.derive().with(CTM_CONTEXT, new CTMContext(world, pos.immutable())).build();
+    		tileData = tileData.derive().with(CTM_CONTEXT, new CTMContext(world, pos)).build();
     	}
     	return tileData;
     }
